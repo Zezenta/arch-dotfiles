@@ -1,0 +1,130 @@
+/* Dracula Color Palette */
+/* Background:  #282a36 */
+/* Current:     #44475a */
+/* Foreground:  #f8f8f2 */
+/* Purple:      #bd93f9 */
+/* Pink:        #ff79c6 */
+/* Cyan:        #8be9fd */
+/* Green:       #50fa7b */
+/* Yellow:      #f1fa8c */
+/* Orange:      #ffb86c */
+/* Red:         #ff5555 */
+
+* {
+    font-family: "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
+    font-size: 13px;
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+    margin: 0;
+}
+
+window#waybar {
+    background-color: #282a36;
+    color: #f8f8f2;
+    border-bottom: 2px solid #44475a;
+}
+
+window#waybar > * {
+    margin: 2px 8px;
+}
+
+/* LEFT */
+#workspaces {
+    margin: 0 8px;
+}
+
+#workspaces button {
+    padding: 0 14px;
+    background-color: transparent;
+    color: #6272a4;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+#workspaces button:hover {
+    background-color: #44475a;
+    color: #f8f8f2;
+}
+
+#workspaces button.active {
+    color: #bd93f9;
+    border-bottom: 2px solid #bd93f9;
+    background-color: #44475a;
+}
+
+#workspaces button.urgent {
+    color: #ff5555;
+    border-bottom: 2px solid #ff5555;
+}
+
+#mpris {
+    padding: 0 12px;
+    margin: 0;
+    color: #ff79c6;
+}
+
+#custom-cava {
+    padding: 0 12px;
+    margin: 0;
+    color: #ff79c6;
+    font-family: "JetBrainsMono Nerd Font";
+}
+
+/* CENTER */
+#clock {
+    padding: 0 32px;
+    color: #f8f8f2;
+    font-weight: bold;
+}
+
+/* RIGHT */
+.modules-right > * {
+    margin-left: 36px;
+}
+
+#cpu,
+#memory,
+#custom-temperature,
+#custom-brightness,
+#pulseaudio,
+#network,
+#language {
+    padding: 0 12px;
+}
+
+#cpu {
+    color: #8be9fd;
+}
+
+#memory {
+    color: #f1fa8c;
+}
+
+#custom-temperature {
+    color: #ffb86c;
+}
+
+#custom-brightness {
+    color: #8be9fd;
+}
+
+#network {
+    color: #50fa7b;
+}
+
+#network.disconnected {
+    color: #ff5555;
+}
+
+#pulseaudio {
+    color: #bd93f9;
+}
+
+#pulseaudio.muted {
+    color: #6272a4;
+}
+
+#language {
+    color: #ff79c6;
+}

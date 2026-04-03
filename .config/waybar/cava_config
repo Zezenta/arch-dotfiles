@@ -1,0 +1,17 @@
+
+[general]
+framerate = 120
+bars = 14
+autosens = 1
+sensitivity = 100
+
+[smoothing]
+integral = 0
+gravity = 1500
+ignore = 0
+
+[output]
+method = raw
+raw_target = /dev/stdout
+data_format = ascii
+ascii_max_range = 7

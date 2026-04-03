@@ -1,0 +1,89 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 36,
+    "spacing": 0,
+
+    "modules-left": ["hyprland/workspaces", "custom/cava", "mpris"],
+    "modules-center": ["clock"],
+    "modules-right": ["cpu", "memory", "custom/temperature", "custom/brightness", "pulseaudio", "network", "hyprland/language"],
+
+    "custom/cava": {
+        "exec": "~/.config/waybar/cava.py",
+        "format": "{}",
+        "tooltip": false
+    },
+
+    "hyprland/workspaces": {
+        "format": "{name}",
+        "on-click": "activate",
+        "format-icons": {
+            "1": "1", "2": "2", "3": "3",
+            "4": "4", "5": "5", "6": "6",
+            "7": "7", "8": "8", "9": "9"
+        }
+    },
+
+    "mpris": {
+        "format": " {artist}: {title}",
+        "format-paused": " {artist}: {title}",
+        "on-click": "playerctl play-pause",
+        "on-scroll-up": "playerctl next",
+        "on-scroll-down": "playerctl previous",
+        "max-length": 50
+    },
+
+    "clock": {
+        "format": " {:%a, %b %d | %H:%M}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+    },
+
+    "cpu": {
+        "format": " {usage}%",
+        "interval": 2,
+        "tooltip-format": "Total: {usage}%\n\nCore 0: {core0}%\nCore 1: {core1}%\nCore 2: {core2}%\nCore 3: {core3}%\nCore 4: {core4}%\nCore 5: {core5}%\nCore 6: {core6}%\nCore 7: {core7}%\nCore 8: {core8}%\nCore 9: {core9}%\nCore 10: {core10}%\nCore 11: {core11}%"
+    },
+
+    "memory": {
+        "format": " {percentage}%",
+        "interval": 2,
+        "tooltip-format": "{used:0.1f}G / {total:0.1f}G\n{percentage}%"
+    },
+
+    "network": {
+        "format-wifi": " {essid}",
+        "format-ethernet": "󰈀",
+        "format-disconnected": "󰖪 disconnected",
+        "tooltip-format-wifi": "{essid}\n Signal: {signalStrength}%",
+        "tooltip-format-ethernet": "{ifname}",
+        "max-length": 20
+    },
+
+    "custom/temperature": {
+        "exec": "~/.config/waybar/temp.sh",
+        "return-type": "json",
+        "interval": 2
+    },
+
+    "custom/brightness": {
+        "exec": "~/.config/waybar/brightness.sh",
+        "return-type": "json",
+        "interval": 2,
+        "on-scroll-up": "ddcutil setvcp 10 + 5",
+        "on-scroll-down": "ddcutil setvcp 10 - 5",
+        "tooltip": true
+    },
+
+    "pulseaudio": {
+        "format": "  {volume}%",
+        "format-muted": "   muted",
+        "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+        "on-click-right": "~/.config/hypr/scripts/audio-output-selector.sh",
+        "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+",
+        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+    },
+
+    "hyprland/language": {
+        "format": "  {short}"
+    }
+}

@@ -1,0 +1,14 @@
+*~
+*.swp
+*.log
+.DS_Store
+
+.cache/
+node_modules/
+venv/
+__pycache__/
+
+.config/Code/
+.config/BraveSoftware/
+.config/google-chrome/
+.config/discord/

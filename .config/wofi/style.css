@@ -1,0 +1,60 @@
+/* Dracula Theme for Wofi */
+
+* {
+    font-family: "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
+    font-size: 14px;
+}
+
+window {
+    margin: 0px;
+    border: 2px solid #bd93f9; /* Purple border matching active workspace */
+    background-color: #282a36;
+    border-radius: 8px;
+    min-width: 400px;
+    max-width: 1000px;
+}
+
+#inner-box {
+    margin: 5px;
+    border: none;
+    background-color: #282a36;
+}
+
+#outer-box {
+    margin: 5px;
+    border: none;
+    background-color: #282a36;
+}
+
+#scroll {
+    margin: 0px;
+    border: none;
+}
+
+#input {
+    margin: 5px;
+    border: 2px solid #44475a;
+    color: #f8f8f2;
+    background-color: #44475a;
+    border-radius: 5px;
+}
+
+#text {
+    margin: 5px;
+    border: none;
+    color: #f8f8f2;
+}
+
+#entry:selected {
+    background-color: #44475a;
+    border-radius: 5px;
+}
+
+#text:selected {
+    color: #bd93f9; /* Purple text for selected item */
+    font-weight: bold;
+}
+
+#img {
+    margin-right: 10px;
+}
