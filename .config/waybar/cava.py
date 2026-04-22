@@ -8,7 +8,7 @@ config_path = os.path.expanduser("~/.config/waybar/cava_config")
 with open(config_path, "w") as f:
     f.write("""
 [general]
-framerate = 60
+framerate = 120
 bars = 14
 autosens = 1
 sensitivity = 100
