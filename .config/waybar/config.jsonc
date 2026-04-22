@@ -51,12 +51,11 @@
     },
 
     "network": {
-        "format-wifi": " {essid}",
+        "format-wifi": "",
         "format-ethernet": "󰈀",
-        "format-disconnected": "󰖪 disconnected",
+        "format-disconnected": "󰖪",
         "tooltip-format-wifi": "{essid}\n Signal: {signalStrength}%",
-        "tooltip-format-ethernet": "{ifname}",
-        "max-length": 20
+        "tooltip-format-ethernet": "{ifname}"
     },
 
     "custom/temperature": {

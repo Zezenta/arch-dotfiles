@@ -80,7 +80,8 @@ window#waybar > * {
 
 /* RIGHT */
 .modules-right > * {
-    margin-left: 36px;
+    margin-left: 24px;
+    margin-right: 0;
 }
 
 #cpu,
@@ -90,7 +91,7 @@ window#waybar > * {
 #pulseaudio,
 #network,
 #language {
-    padding: 0 12px;
+    padding: 0 8px;
 }
 
 #cpu {
@@ -111,6 +112,7 @@ window#waybar > * {
 
 #network {
     color: #50fa7b;
+    padding-right: 16px;
 }
 
 #network.disconnected {

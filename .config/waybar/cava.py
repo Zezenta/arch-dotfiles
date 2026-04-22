@@ -42,12 +42,17 @@ try:
         line = process.stdout.readline()
         if not line:
             break
-        
+
         # Procesamiento ultra rápido de la cadena
         clean_line = line.strip().replace(';', '')
         output = "".join(dict_bars.get(c, '') for c in clean_line)
-        
-        sys.stdout.write(output + '\n')
+
+        # Solo mostrar output si hay actividad de audio (no todo espacio)
+        if output.strip():
+            sys.stdout.write(output + '\n')
+        else:
+            sys.stdout.write('\n')
+
         sys.stdout.flush()
 except KeyboardInterrupt:
     process.terminate()
