@@ -67,7 +67,7 @@
     "custom/brightness": {
         "exec": "~/.config/waybar/brightness.sh",
         "return-type": "json",
-        "interval": 2,
+        "interval": 3,
         "on-scroll-up": "ddcutil setvcp 10 + 5",
         "on-scroll-down": "ddcutil setvcp 10 - 5",
         "tooltip": true
