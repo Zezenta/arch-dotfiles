@@ -1,0 +1,26 @@
+[theme]
+name = "Clipboard Preview"
+description = "Custom theme with image preview for clipboard"
+
+[window]
+width = 900
+height = 500
+border_radius = 12
+border_width = 2
+
+[colors]
+background = "#1e1e2e"
+foreground = "#cdd6f4"
+border = "#89b4fa"
+accent = "#89b4fa"
+
+[providers.clipboard]
+time_format = "relative"
+show_image_preview = true
+preview_max_width = 400
+preview_max_height = 300
+
+[ui]
+show_preview = true
+preview_width = 400
+list_width = 450

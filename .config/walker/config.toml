@@ -1,0 +1,60 @@
+# Walker Configuration
+
+[general]
+terminal = "ghostty"
+mod_key = "super"
+theme = "dracula"
+
+[window]
+activate_item = "return"
+suppress_activate = "space"
+clear_previous_query = true
+show_initial_entries = true
+placeholder = "Search..."
+placeholder_icon = "preferences-desktop-search"
+force_keyboard_focus = true
+
+[list]
+scrollbar_policy = "automatic"
+single_click_activate = false
+show_initial_entries = true
+
+[activation]
+left_click = "activate"
+middle_click = "activate-2"
+right_click = "activate-3"
+
+[search]
+delay = 0
+clear_on_activate = true
+hide_abbreviations = false
+
+[icons]
+theme = "Papirus-Dark"
+fallback_icon = "text-x-generic"
+hide_category_for_single = false
+
+[preview]
+visible = true
+image_width = 400
+image_height = 300
+
+[providers.clipboard]
+enabled = true
+name = "Clipboard History"
+prefix = ":"
+switcher_prefix = ""
+icon = "edit-paste"
+priority = 0
+# Clipboard settings
+time_format = "relative"
+show_image_preview = true
+max_entries = 100
+
+[providers.applications]
+enabled = true
+name = "Applications"
+prefix = ""
+switcher_prefix = "a"
+icon = "launch"
+priority = 1

@@ -1,0 +1,259 @@
+/* Dracula Theme para Walker - Basado en wofi style.css */
+
+@define-color window_bg_color #282a36;
+@define-color accent_bg_color #bd93f9;
+@define-color input_bg_color #44475a;
+@define-color text_color #f8f8f2;
+@define-color selected_text_color #bd93f9;
+@define-color border_color #bd93f9;
+
+* {
+  all: unset;
+  font-family: "Noto Sans", "Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+popover {
+  background: @window_bg_color;
+  border: 2px solid @border_color;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.normal-icons {
+  -gtk-icon-size: 16px;
+}
+
+.large-icons {
+  -gtk-icon-size: 32px;
+}
+
+scrollbar {
+  opacity: 0;
+}
+
+.box-wrapper {
+  box-shadow: none;
+  background: @window_bg_color;
+  padding: 0px;
+  border-radius: 8px;
+  border: 2px solid @border_color;
+}
+
+.preview-box,
+.elephant-hint,
+.placeholder {
+  color: @text_color;
+}
+
+.box {
+}
+
+.search-container {
+  border-radius: 0px;
+  margin: 0;
+  padding: 0;
+}
+
+.input placeholder {
+  opacity: 0.7;
+  color: @text_color;
+}
+
+.input selection {
+  background: @selected_text_color;
+  color: @window_bg_color;
+}
+
+.input {
+  caret-color: @text_color;
+  background: @input_bg_color;
+  padding: 12px;
+  color: @text_color;
+  border: none;
+  border-radius: 0px;
+  margin: 0;
+}
+
+.input:focus,
+.input:active {
+  background: @input_bg_color;
+}
+
+.content-container {
+  margin: 5px;
+}
+
+.placeholder {
+}
+
+.scroll {
+}
+
+.list {
+  color: @text_color;
+}
+
+child {
+}
+
+.item-box {
+  border-radius: 0px;
+  padding: 8px;
+  margin: 0;
+  border: none;
+}
+
+.item-quick-activation {
+  opacity: 0;
+}
+
+/* Estilo para items seleccionados - igual que wofi #entry:selected */
+child:hover .item-box,
+child:selected .item-box,
+row:selected .item-box {
+  background: @input_bg_color;
+  border-radius: 5px;
+}
+
+child:selected .item-text,
+row:selected .item-text,
+.item-text-box:selected .item-text {
+  color: @selected_text_color;
+  font-weight: bold;
+}
+
+.item-text-box {
+  color: @text_color;
+}
+
+.item-subtext {
+  font-size: 12px;
+  opacity: 0.7;
+  color: @text_color;
+}
+
+.providerlist .item-subtext {
+  font-size: unset;
+  opacity: 0.75;
+}
+
+.item-image-text {
+  font-size: 28px;
+}
+
+.preview {
+  border: none;
+  border-radius: 0px;
+  color: @text_color;
+  background: @window_bg_color;
+  padding: 10px;
+}
+
+.preview image {
+  border-radius: 5px;
+}
+
+.calc .item-text {
+  font-size: 24px;
+}
+
+.calc .item-subtext {
+}
+
+.symbols .item-image {
+  font-size: 24px;
+}
+
+.todo.done .item-text-box {
+  opacity: 0.25;
+}
+
+.todo.urgent {
+  font-size: 24px;
+}
+
+.todo.active {
+  font-weight: bold;
+}
+
+.bluetooth.disconnected {
+  opacity: 0.5;
+}
+
+.preview .large-icons {
+  -gtk-icon-size: 64px;
+}
+
+/* Ocultar keybinds pero mantener el layout */
+.keybinds {
+  opacity: 0;
+  min-height: 0;
+  height: 0;
+  padding: 0;
+  margin: 0;
+  font-size: 0;
+}
+
+.global-keybinds {
+  opacity: 0;
+  min-height: 0;
+}
+
+.item-keybinds {
+  opacity: 0;
+  min-height: 0;
+}
+
+.keybind {
+  opacity: 0;
+  min-height: 0;
+}
+
+.keybind-button {
+  opacity: 0;
+  min-height: 0;
+  min-width: 0;
+}
+
+.keybind-button:hover {
+  opacity: 0;
+}
+
+.keybind-bind {
+  opacity: 0;
+  font-size: 1px;
+}
+
+.keybind-label {
+  opacity: 0;
+  min-height: 0;
+  min-width: 0;
+  padding: 0;
+  font-size: 1px;
+}
+
+.error {
+  padding: 10px;
+  background: #ff5555;
+  color: @text_color;
+  border-radius: 5px;
+}
+
+:not(.calc).current {
+  font-style: italic;
+  color: @selected_text_color;
+}
+
+.preview-content.archlinuxpkgs,
+.preview-content.dnfpackages {
+  font-family: monospace;
+}
+
+/* Estilos específicos para clipboard */
+.clipboard .item-box {
+}
+
+.clipboard .preview {
+}
