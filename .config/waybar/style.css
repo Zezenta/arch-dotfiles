@@ -89,7 +89,9 @@ window#waybar > * {
 #custom-temperature,
 #custom-brightness,
 #pulseaudio,
+#custom-bluetooth,
 #network,
+#custom-battery,
 #language {
     padding: 0 8px;
 }
@@ -129,4 +131,28 @@ window#waybar > * {
 
 #language {
     color: #ff79c6;
+}
+
+#custom-bluetooth {
+    color: #6272a4;
+}
+
+#custom-bluetooth.enabled {
+    color: #50fa7b;
+}
+
+#custom-battery {
+    color: #50fa7b;
+}
+
+#custom-battery.charging {
+    color: #f1fa8c;
+}
+
+#custom-battery.warning {
+    color: #ffb86c;
+}
+
+#custom-battery.critical {
+    color: #ff5555;
 }

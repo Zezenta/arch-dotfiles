@@ -6,7 +6,7 @@
 
     "modules-left": ["hyprland/workspaces", "custom/cava", "mpris"],
     "modules-center": ["clock"],
-    "modules-right": ["cpu", "memory", "custom/temperature", "custom/brightness", "pulseaudio", "network", "hyprland/language"],
+    "modules-right": ["cpu", "memory", "custom/temperature", "custom/brightness", "pulseaudio", "custom/bluetooth", "network", "custom/battery", "hyprland/language"],
 
     "custom/cava": {
         "exec": "~/.config/waybar/cava.py",
@@ -80,6 +80,21 @@
         "on-click-right": "~/.config/hypr/scripts/audio-output-selector.sh",
         "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+",
         "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+    },
+
+    "custom/bluetooth": {
+        "exec": "~/.config/waybar/bluetooth.sh",
+        "return-type": "json",
+        "interval": 5,
+        "on-click": "bluetoothctl power on && alacritty -e bluetoothctl",
+        "tooltip": true
+    },
+
+    "custom/battery": {
+        "exec": "~/.config/waybar/battery.sh",
+        "return-type": "json",
+        "interval": 3,
+        "tooltip": true
     },
 
     "hyprland/language": {
