@@ -1,8 +1,14 @@
 #!/bin/bash
 
-# Simple script para mostrar ícono de audio (desktop version - solo speakers)
+# Script para mostrar ícono de audio según el dispositivo activo
 
 current_sink=$(pactl get-default-sink)
 
-# Desktop: solo muestra speakers, no hay bluetooth
-echo '{"text": "", "tooltip": "Speakers"}'
+# Detectar si es audífonos (analógico) o speakers (HDMI)
+if [[ "$current_sink" == *"analog-stereo"* ]]; then
+    echo '{"text": "󰋋", "tooltip": "Headphones"}'
+elif [[ "$current_sink" == *"hdmi-stereo"* ]]; then
+    echo '{"text": "", "tooltip": "Speakers"}'
+else
+    echo '{"text": "󰋋", "tooltip": "Audio"}'
+fi
