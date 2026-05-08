@@ -88,6 +88,7 @@ window#waybar > * {
 #memory,
 #custom-temperature,
 #custom-brightness,
+#custom-audio-icon,
 #pulseaudio,
 #custom-bluetooth,
 #network,
@@ -110,6 +111,20 @@ window#waybar > * {
 
 #custom-brightness {
     color: #8be9fd;
+}
+
+#custom-audio-icon {
+    color: #bd93f9;
+    padding-right: 2px;
+}
+
+#pulseaudio {
+    color: #bd93f9;
+    padding-left: 6px;
+}
+
+#pulseaudio.muted {
+    color: #6272a4;
 }
 
 #network {

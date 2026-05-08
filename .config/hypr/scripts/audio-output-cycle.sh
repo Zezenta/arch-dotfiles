@@ -28,6 +28,9 @@ next_sink=$(pactl list short sinks | awk -v id="$next_id" '$1 == id {print $2; e
 # Set as default
 pactl set-default-sink "$next_sink"
 
+# Send signal to waybar to update audio icon
+pkill -SIGRTMIN+10 waybar 2>/dev/null
+
 # Get friendly name for notification
 friendly_name=$(pactl list sinks | grep -A 20 "Sink #$next_id" | grep "Description:" | sed 's/.*Description: //')
 

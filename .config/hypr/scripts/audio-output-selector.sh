@@ -26,6 +26,9 @@ if [ -n "$selection" ]; then
     # Set the default sink
     pactl set-default-sink "$device_name"
 
+    # Send signal to waybar to update audio icon
+    pkill -SIGRTMIN+10 waybar 2>/dev/null
+
     # Get the friendly name for notification
     friendly_name=$(echo "$selection" | cut -d'|' -f2)
 

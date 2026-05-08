@@ -6,7 +6,7 @@
 
     "modules-left": ["hyprland/workspaces", "custom/cava", "mpris"],
     "modules-center": ["clock"],
-    "modules-right": ["cpu", "memory", "custom/temperature", "custom/brightness", "pulseaudio", "custom/bluetooth", "network", "custom/battery", "hyprland/language"],
+    "modules-right": ["cpu", "memory", "custom/temperature", "custom/brightness", "custom/audio-icon", "pulseaudio", "custom/bluetooth", "network", "custom/battery", "hyprland/language"],
 
     "custom/cava": {
         "exec": "~/.config/waybar/cava.py",
@@ -73,9 +73,18 @@
         "tooltip": true
     },
 
+    "custom/audio-icon": {
+        "exec": "~/.config/waybar/audio-icon.sh",
+        "return-type": "json",
+        "interval": 30,
+        "signal": 10,
+        "tooltip": true
+    },
+
     "pulseaudio": {
-        "format": "  {volume}%",
-        "format-muted": "   muted",
+        "scroll-step": 5,
+        "format": "{volume}%",
+        "format-muted": "muted",
         "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
         "on-click-right": "~/.config/hypr/scripts/audio-output-selector.sh",
         "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+",
