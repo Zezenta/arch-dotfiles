@@ -35,7 +35,7 @@
 
     "clock": {
         "format": " {:%a, %b %d | %H:%M}",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+        "on-click": "sh -c 'if pgrep -x waycal > /dev/null; then pkill waycal; else waycal & fi'"
     },
 
     "cpu": {

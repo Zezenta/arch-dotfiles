@@ -8,7 +8,7 @@ current_sink=$(pactl get-default-sink)
 if [[ "$current_sink" == *"analog-stereo"* ]]; then
     echo '{"text": "󰋋", "tooltip": "Headphones"}'
 elif [[ "$current_sink" == *"hdmi-stereo"* ]]; then
-    echo '{"text": "", "tooltip": "Speakers"}'
+    echo '{"text": "󰕾", "tooltip": "Speakers"}'
 else
     echo '{"text": "󰋋", "tooltip": "Audio"}'
 fi
