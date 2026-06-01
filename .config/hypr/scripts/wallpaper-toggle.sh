@@ -1,47 +1,79 @@
 #!/bin/bash
 
-# Toggle between linux-wallpaperengine and hyprpaper
-# Kills the active one and starts the other to save resources
+# ==========================================
+# Wallpaper Mode Toggle (3 Modes)
+# ==========================================
+# Toggles between:
+# 1. 'adamcreation' - Static local wallpaper via hyprpaper
+# 2. 'wallpaperengine' - Animated wallpapers via linux-wallpaperengine
+# 3. 'wallhaven' - Static rolling wallpapers from Wallhaven favorites
 
-# Comprobar si linux-wallpaperengine está corriendo
-if pgrep -f "linux-wallpaperengine" >/dev/null; then
-    echo "Switching to hyprpaper..."
-    # Matar el motor y el script de rotación por completo para no gastar recursos
-    pkill -9 -f "linux-wallpaperengine"
-    pkill -9 -f "wallpaper-rotation.sh"
+MODE_FILE="$HOME/.config/hypr/scripts/wallpaper-mode.txt"
 
-    # Esperar un momento para asegurar que los recursos se liberan (memoria/GPU)
-    sleep 0.5
+# Determine if we are restoring the saved state or cycling
+CYCLE=true
+if [ "$1" = "--restore" ]; then
+    CYCLE=false
+fi
 
-    # Matar cualquier instancia previa de hyprpaper para evitar conflictos
-    pkill -9 hyprpaper 2>/dev/null
-    sleep 0.2
-
-    # Iniciar hyprpaper
-    hyprpaper &
-
-    # Esperar a que hyprpaper inicie y cargar el wallpaper
-    sleep 1.0
-    # Precargar y establecer el wallpaper explícitamente (usando hyprctl para asegurar que se aplica)
-    hyprctl hyprpaper preload "~/.config/hypr/../../assets/wallpaperadamcreation.jpg" 2>/dev/null
-    hyprctl hyprpaper wallpaper "HDMI-A-1,~/.config/hypr/../../assets/wallpaperadamcreation.jpg" 2>/dev/null
-
-# Si no está corriendo el motor, comprobamos si está hyprpaper
-elif pgrep -x "hyprpaper" >/dev/null; then
-    echo "Switching to linux-wallpaperengine..."
-    # Matar hyprpaper
-    pkill -x "hyprpaper"
-
-    # Esperar un momento
-    sleep 0.5
-
-    # Iniciar script de rotación del motor
-    ~/.config/hypr/scripts/wallpaper-rotation.sh &
+# Load current mode from file, default to 'adamcreation'
+if [ -f "$MODE_FILE" ]; then
+    CURRENT_MODE=$(cat "$MODE_FILE")
 else
-    # Si ninguno corre (al iniciar la PC), arrancamos hyprpaper por defecto
-    echo "Starting hyprpaper as default..."
+    CURRENT_MODE="adamcreation"
+fi
+
+# Clean up all active rotation loops and engines
+pkill -9 -f "linux-wallpaperengine"
+pkill -9 -f "wallpaper-rotation.sh"
+pkill -9 -f "wallpaper-wallhaven-rotation.sh"
+
+if [ "$CYCLE" = "true" ]; then
+    # Cycle to the next mode
+    if [ "$CURRENT_MODE" = "adamcreation" ]; then
+        NEXT_MODE="wallpaperengine"
+    elif [ "$CURRENT_MODE" = "wallpaperengine" ]; then
+        NEXT_MODE="wallhaven"
+    else
+        NEXT_MODE="adamcreation"
+    fi
+    echo "Switching wallpaper mode from $CURRENT_MODE to $NEXT_MODE..."
+    echo "$NEXT_MODE" > "$MODE_FILE"
+    ACTIVE_MODE="$NEXT_MODE"
+else
+    echo "Restoring saved wallpaper mode: $CURRENT_MODE..."
+    ACTIVE_MODE="$CURRENT_MODE"
+fi
+
+# Launch the selected mode
+if [ "$ACTIVE_MODE" = "adamcreation" ]; then
+    # Ensure hyprpaper is running
+    pkill -x hyprpaper 2>/dev/null
+    sleep 0.2
     hyprpaper &
     sleep 1.0
-    hyprctl hyprpaper preload "~/.config/hypr/../../assets/wallpaperadamcreation.jpg" 2>/dev/null
-    hyprctl hyprpaper wallpaper "HDMI-A-1,~/.config/hypr/../../assets/wallpaperadamcreation.jpg" 2>/dev/null
+    
+    # Set the static adamcreation wallpaper
+    WALLPAPER="$HOME/.config/hypr/../../assets/wallpaperadamcreation.jpg"
+    hyprctl hyprpaper unload all 2>/dev/null
+    hyprctl hyprpaper preload "$WALLPAPER" 2>/dev/null
+    hyprctl hyprpaper wallpaper "HDMI-A-1,$WALLPAPER" 2>/dev/null
+
+elif [ "$ACTIVE_MODE" = "wallpaperengine" ]; then
+    # Kill hyprpaper to save GPU/RAM resources
+    pkill -x hyprpaper 2>/dev/null
+    sleep 0.2
+    
+    # Start the wallpaper engine rotation loop
+    "$HOME/.config/hypr/scripts/wallpaper-rotation.sh" &
+
+elif [ "$ACTIVE_MODE" = "wallhaven" ]; then
+    # Ensure hyprpaper is running
+    pkill -x hyprpaper 2>/dev/null
+    sleep 0.2
+    hyprpaper &
+    sleep 1.0
+    
+    # Start the Wallhaven rotation loop
+    "$HOME/.config/hypr/scripts/wallpaper-wallhaven-rotation.sh" &
 fi

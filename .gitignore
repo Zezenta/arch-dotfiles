@@ -12,3 +12,9 @@ __pycache__/
 .config/BraveSoftware/
 .config/google-chrome/
 .config/discord/
+
+# Wallhaven credentials
+wallhaven.env
+
+# Wallpaper engine state
+wallpaper-mode.txt

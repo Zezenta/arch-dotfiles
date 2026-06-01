@@ -12,3 +12,7 @@ export XDG_CACHE_HOME="$HOME/.local/share"
 #if [[ $(tty) == /dev/tty1 ]]; then
 #	exec dbus-run-session Hyprland
 #fi
+
+
+# Added by Antigravity CLI installer
+export PATH="/home/zezenta/.local/bin:$PATH"

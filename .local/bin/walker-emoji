@@ -1,0 +1,530 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import sys
+import os
+import json
+import math
+import subprocess
+import shutil
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import (
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QLabel, QTableWidget, QTableWidgetItem, QStackedWidget,
+    QAbstractItemView
+)
+from PyQt6.QtGui import QGuiApplication, QFont
+
+STATE_DIR = os.path.expanduser("~/.config/walker-emoji")
+STATE_FILE = os.path.join(STATE_DIR, "state.json")
+
+# Self-contained emoji list by categories
+EMOJIS = {
+    "Smileys": ["😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣", "😊", "😇", "🙂", "🙃", "😉", "😌", "😍", "🥰", "😘", "😗", "😙", "😚", "😋", "😛", "😝", "😜", "🤪", "🤨", "🧐", "🤓", "😎", "🥸", "🤩", "🥳", "😏", "😒", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣", "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠", "😡", "🤬", "🤯", "😳", "🥵", "🥶", "😱", "😨", "😰", "😥", "😓", "🤗", "🤔", "🫣", "🤭", "🤫", "🤥", "😶", "🫥", "😐", "😑", "😬", "🙄", "😯", "😦", "😧", "😮", "😲", "🥱", "😴", "🤤", "😪", "😵", "😵‍💫", "🫨", "🤐", "🥴", "🤢", "🤮", "🤧", "😷", "🤒", "🤕", "🤑", "🤠", "😈", "👿", "👹", "👺", "🤡", "💩", "👻", "💀", "☠️", "👽", "👾", "🤖", "🎃"],
+    "People": ["👋", "🤚", "🖐️", "✋", "🖖", "👌", "🤌", "🤏", "✌️", "🤞", "🫰", "🤟", "🤘", "🤙", "👈", "👉", "👆", "🖕", "👇", "☝️", "👍", "👎", "✊", "👊", "🤛", "🤜", "👏", "🙌", "👐", "🤲", "🤝", "🙏", "✍️", "💅", "🤳", "💪", "🦾", "🦿", "🦵", "🦶", "👂", "🦻", "👃", "🧠", "🫀", "🫁", "🦷", "🦴", "👀", "👁️", "👅", "👄", "💋", "🩸", "👤", "👥", "🫂"],
+    "Nature": ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐨", "🐯", "🦁", "🐮", "🐷", "🐽", "🐸", "🐵", "🙈", "🙉", "🙊", "🐒", "🐔", "🐧", "🐦", "🐤", "🐣", "🐥", "🦆", "🦅", "🦉", "🐺", "🐗", "🐴", "🦄", "🐝", "🐛", "🦋", "🐌", "🐞", "🐜", "🕷️", "🕸️", "🦂", "🐢", "🐍", "🦎", "🐙", "🦑", "🦞", "🦀", "🐡", "🐠", "🐟", "🐬", "🐳", "🐋", "🦈", "🐊", "🐅", "🐆", "🦓", "🦍", "🐘", "🐪", "🦒", "🐂", "🐄", "🐎", "🐖", "🐏", "🐑", "🐐", "🦌", "🐕", "🐈", "🐓", "🕊️", "🐇", "🌲", "🌳", "🌴", "🌵", "🌾", "🌿", "🍀", "🍁", "🍂", "🍃", "🍄", "🐚", "🔥", "💧", "🌈", "☀️", "🌤️", "⛅", "🌦️", "🌧️", "🌨️", "🌩️", "🌪️", "❄️", "🌀", "🌊"],
+    "Food": ["🍇", "🍉", "🍊", "🍋", "🍌", "🍍", "🍎", "🍏", "🍐", "🍑", "🍒", "🍓", "🥝", "🍅", "🥥", "🥑", "🍆", "🥔", "🥕", "🌽", "🌶️", "🫑", "🧅", "🧄", "🥦", "🥜", "🌰", "🍞", "🥐", "🥖", "🥨", "🥯", "🥞", " waffle 🧇", "🧀", "🍖", "🍗", "🥩", "🥓", "🍔", "🍟", "🍕", " hotdog 🌭", "🥪", "🌮", "🌯", "🥚", "🍳", "🥘", "🍲", "🥗", "Popcorn 🍿", "🧈", "🧂", "🥫", " Bento 🍱", "🍘", "🍙", "🍚", "🍛", "🍜", "🍝", "🍠", " sushi 🍣", " tempura 🍤", " dango 🍡", " dumpling 🥟", "🍦", "🍧", "🍨", "🍩", "🍪", "🎂", "🍰", " cupcake 🧁", " pie 🥧", "🍫", "🍬", "🍭", " honey 🍯", "🍼", "🥛", "☕", "🍵", " Sake 🍶", "🍷", "🍸", "🍹", "🍺", "🍻", "🥃", "🥤"],
+    "Travel": ["🚗", "🚕", "🚙", "🚌", "🚎", "🏎️", "🚓", "🚑", "🚒", "🚐", "🛻", "🚚", "🚛", "🚜", "🛴", "🚲", "🛵", "🏍️", "🛺", "🚨", "🚔", "🚍", "🚘", "🚖", "🚡", "🚠", "🚟", "🚃", "🚋", "🚞", "🚝", "🚄", "🚅", "🚈", "🚂", "🚆", "🚇", "🚊", "✈️", "🛫", "🛬", "🛩️", "💺", "🚀", "🛸", "🚁", "🛶", "⛵", "🚤", "🛥️", "🛳️", "🚢", "⚓", "🌋", "🏔️", "🗻", "🏕️", "🏖️", "🏜️", "🏝️", "🏞️", "🏟️", "🏛️", "🏢", "🏘️", "🏰", "🗼", "🗽", "🎡", "🎢", "💈", "⛺", "⛲"],
+    "Activities": ["⚽", "🏀", "🏈", "⚾", "🥎", "🎾", " volleyball 🏐", " rugby 🏉", " frisbee 🥏", "🎱", "🏓", "🏸", "🏒", "🥅", "⛳", "🏹", " fishing 🎣", "🥊", "🥋", " skate ⛸️", " ski 🎿", " sled 🛷", " curler 🥌", "🏂", "🏋️", "🤺", "🤸", "🏄", "🏊", "🤽", "🤾", "🧗", "🧘", "🚴", "🚵", "🏆", "🥇", "🥈", "🥉", "🏅", "🎖️", "🎫", "🎟️", "🎪", "🎭", "🎨", "🖼️", "🎬", "🎤", "🎧", "🎼", "🎹", "🥁", " saxophone 🎷", " trumpet 🎺", " guitar 🎸", " violin 🎻", "🎲", "🧩", "🎯", " bowling 🎳", "🎮", "🎰"],
+    "Objects": ["⌚", "📱", "📲", "💻", "⌨️", "🖥️", "🖨️", "🖱️", "🖲️", "🕹️", "🗜️", "💽", "💾", "💿", "📀", "📼", "📷", "📸", "📹", "🎥", "📽️", "🎞️", "📞", "📟", "📠", "📺", "📻", "🎙️", "🎚️", "🎛️", "🧭", "⏱️", "⏲️", "⏰", "⌛", "⏳", "🔦", "💡", "🕯️", "🕯️", "🏮", "🧱", "🚪", "🚿", "🛁", "🧼", "🪥", "🪒", "🧴", "🧻", "🧹", "🧺", "🧽", "🪣", "🛎️", "🔑", "🗝️", "🔨", "🪓", "🔧", "🔩", "⚙️", "⛓️", "🧲", "🛡️", "🏹", "⚔️", "🗡️", "🔫", "💣", "🧨", "🩺", "🔬", "🔭", "📡", "💉", "🩸", "💊", "🩹", "🩼", "🛏️", "🛋️", "🪑", "🚽", "🧹", "🧺"],
+    "Symbols": ["💘", "💖", "💗", "💓", "💞", "💕", "💟", "❣️", "💔", "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "🤎", "🎴", "💤", "💬", "💭", "💮", "🉐", "㊙️", "㊗️", "🈴", "🈵", "🈹", "🈲", "🚫", "❌", "⭕", "💢", "♨️", "🚷", "🚯", "🚳", "🚱", "🔞", "🚭", "❗️", "❕", "❓", "❔", "‼️", "⁉️", "🔆", "⚠️", "⚡", "🌀", "🌈", "🌊", "💧", "🔥", "🌌", "🪐", "🌟", "⭐️", "✨", "☄️"],
+    "Flags": ["🏁", "🚩", "🎌", "🏴", "🏳️", "🏳️‍🌈", "🏳️‍⚧️", "🏴‍☠️", "🇺🇸", "🇨🇦", "🇲🇽", "🇧🇷", "🇬🇧", "🇫🇷", "🇩🇪", "🇮🇹", "🇪🇸", "🇷🇺", "🇨🇳", "🇯🇵", "🇰🇷", "🇮🇳", "🇦🇺", "🇿🇦", "🇪🇬", "🇸🇦", "🇹🇷", "🇺🇦", "🇵🇱", "🇳🇱", "🇸🇪", "🇳🇴", "🇫🇮", "🇨🇭", "🇦🇹", "🇧🇪", "🇮🇪", "🇳🇿", "🇸🇬", "🇲🇾", "🇮🇩", "🇵🇭", "🇻🇳", "🇹🇭", "🇻🇦"]
+}
+
+def load_state():
+    if not os.path.exists(STATE_FILE):
+        return {"favorites": [], "recent": []}
+    try:
+        with open(STATE_FILE, "r") as f:
+            return json.load(f)
+    except Exception:
+        return {"favorites": [], "recent": []}
+
+def save_state(state):
+    os.makedirs(STATE_DIR, exist_ok=True)
+    try:
+        with open(STATE_FILE, "w") as f:
+            json.dump(state, f)
+    except Exception as e:
+        print(f"Error saving state: {e}")
+
+class EmojiPicker(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        
+        # Load user history and favorites
+        self.state = load_state()
+        
+        # Capture Hyprland active window before we gain focus
+        self.target_address = self.get_target_window_address()
+        
+        self.tab_icons = ["⭐", "🕒", "😀", "👋", "🌲", "🍔", "🚗", "⚽", "💡", "🔣", "🏁"]
+        self.tab_names = ["Favorites", "Recent", "Smileys", "People", "Nature", "Food", "Travel", "Activities", "Objects", "Symbols", "Flags"]
+        self.current_tab_idx = 0
+        
+        # Initialize UI
+        self.init_ui()
+
+    def get_target_window_address(self):
+        try:
+            output = subprocess.check_output(['hyprctl', 'activewindow', '-j'], text=True)
+            data = json.loads(output)
+            # Make sure we don't focus our own window address
+            addr = data.get('address')
+            # Class name of this window will be "walker-emoji"
+            if data.get('class') == 'walker-emoji':
+                return None
+            return addr
+        except Exception:
+            return None
+
+    def init_ui(self):
+        # Frameless window configuration
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        self.setWindowFlags(
+            Qt.WindowType.FramelessWindowHint |
+            Qt.WindowType.WindowStaysOnTopHint |
+            Qt.WindowType.Tool
+        )
+        
+        self.setObjectName("walker-emoji")
+        self.setWindowTitle("walker-emoji")
+        
+        # Central container with Dracula theme borders
+        self.central_widget = QWidget(self)
+        self.central_widget.setObjectName("container")
+        self.setCentralWidget(self.central_widget)
+        
+        main_layout = QVBoxLayout(self.central_widget)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
+        
+        # 1. Header (Tab Icons)
+        header_widget = QWidget()
+        header_widget.setObjectName("header")
+        header_layout = QHBoxLayout(header_widget)
+        header_layout.setContentsMargins(10, 5, 10, 5)
+        header_layout.setSpacing(10)
+        header_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
+        self.tab_labels = []
+        for icon in self.tab_icons:
+            lbl = QLabel(icon)
+            lbl.setObjectName("tab-label")
+            lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            header_layout.addWidget(lbl)
+            self.tab_labels.append(lbl)
+            
+        main_layout.addWidget(header_widget)
+        
+        # 2. Stacked Grid Widgets
+        self.stacked_widget = QStackedWidget()
+        main_layout.addWidget(self.stacked_widget)
+        
+        # Pre-build grids for each category
+        # First 2 are placeholders/dynamically built
+        self.rebuild_favorites_grid()
+        self.rebuild_recent_grid()
+        
+        # EMOJI CATEGORIES
+        for category, list_of_emojis in EMOJIS.items():
+            grid = self.create_grid(list_of_emojis)
+            self.stacked_widget.addWidget(grid)
+            
+        # Select first tab initially
+        self.stacked_widget.setCurrentIndex(0)
+        self.update_tab_headers()
+        
+        # 3. Footer (Visual Hints)
+        self.footer_widget = QWidget()
+        self.footer_widget.setObjectName("footer")
+        footer_layout = QHBoxLayout(self.footer_widget)
+        footer_layout.setContentsMargins(15, 8, 15, 8)
+        
+        self.footer_label = QLabel()
+        self.footer_label.setObjectName("footer-text")
+        footer_layout.addWidget(self.footer_label)
+        
+        main_layout.addWidget(self.footer_widget)
+        
+        # Apply CSS style sheet (Dracula Theme)
+        self.setStyleSheet("""
+            #container {
+                background-color: #282a36;
+                border: 2px solid #bd93f9;
+                border-radius: 12px;
+            }
+            #header {
+                background-color: #1e1f29;
+                border-bottom: 1px solid #44475a;
+                border-top-left-radius: 10px;
+                border-top-right-radius: 10px;
+            }
+            #footer {
+                background-color: #1e1f29;
+                border-top: 1px solid #44475a;
+                border-bottom-left-radius: 10px;
+                border-bottom-right-radius: 10px;
+            }
+            #footer-text {
+                color: #6272a4;
+                font-family: sans-serif;
+                font-size: 10pt;
+            }
+        """)
+        
+        self.resize(500, 420)
+        self.center_on_screen()
+        
+        # Trigger initial selection highlight
+        self.select_cell(0, 0)
+        self.update_footer()
+
+    def center_on_screen(self):
+        screen = QGuiApplication.primaryScreen().geometry()
+        width = 500
+        height = 420
+        x = (screen.width() - width) // 2
+        y = (screen.height() - height) // 2
+        self.setGeometry(x, y, width, height)
+
+    def create_grid(self, emojis_list):
+        cols = 9
+        num_emojis = len(emojis_list)
+        rows = math.ceil(num_emojis / cols) if num_emojis > 0 else 1
+        
+        table = QTableWidget(rows, cols)
+        table.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        table.horizontalHeader().setVisible(False)
+        table.verticalHeader().setVisible(False)
+        table.setShowGrid(False)
+        
+        # Sizing
+        table.horizontalHeader().setDefaultSectionSize(52)
+        table.verticalHeader().setDefaultSectionSize(52)
+        
+        # Populate cells
+        for idx, emoji in enumerate(emojis_list):
+            r = idx // cols
+            c = idx % cols
+            
+            # Clean emoji strings of leading descriptors
+            clean_emoji = emoji.strip().split(" ")[-1]
+            
+            item = QTableWidgetItem(clean_emoji)
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            item.setFont(QFont("Noto Color Emoji", 20))
+            item.setFlags(Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled)
+            table.setItem(r, c, item)
+            
+        # Specific table styling
+        table.setStyleSheet("""
+            QTableWidget {
+                background-color: #282a36;
+                gridline-color: transparent;
+                border: none;
+            }
+            QTableWidget::item {
+                border: 2px solid transparent;
+                border-radius: 8px;
+            }
+            QTableWidget::item:selected {
+                background-color: #44475a;
+                border: 2px solid #bd93f9;
+            }
+        """)
+        
+        table.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        return table
+
+    def rebuild_favorites_grid(self):
+        old_widget = self.stacked_widget.widget(0) if self.stacked_widget.count() > 0 else None
+        if old_widget:
+            self.stacked_widget.removeWidget(old_widget)
+            old_widget.deleteLater()
+            
+        favs = self.state["favorites"]
+        if not favs:
+            table = QTableWidget(1, 1)
+            table.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+            table.horizontalHeader().setVisible(False)
+            table.verticalHeader().setVisible(False)
+            table.setShowGrid(False)
+            table.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+            item = QTableWidgetItem("⭐ Press Tab on any emoji to add here!")
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            item.setFont(QFont("sans-serif", 10))
+            item.setForeground(Qt.GlobalColor.gray)
+            table.setItem(0, 0, item)
+            table.setStyleSheet("QTableWidget { background-color: #282a36; border: none; }")
+            self.stacked_widget.insertWidget(0, table)
+        else:
+            table = self.create_grid(favs)
+            self.stacked_widget.insertWidget(0, table)
+
+    def rebuild_recent_grid(self):
+        # Index of Recent is 1
+        old_widget = self.stacked_widget.widget(1) if self.stacked_widget.count() > 1 else None
+        if old_widget:
+            self.stacked_widget.removeWidget(old_widget)
+            old_widget.deleteLater()
+            
+        recents = self.state["recent"]
+        if not recents:
+            table = QTableWidget(1, 1)
+            table.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+            table.horizontalHeader().setVisible(False)
+            table.verticalHeader().setVisible(False)
+            table.setShowGrid(False)
+            table.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+            item = QTableWidgetItem("🕒 Recently typed emojis show up here!")
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            item.setFont(QFont("sans-serif", 10))
+            item.setForeground(Qt.GlobalColor.gray)
+            table.setItem(0, 0, item)
+            table.setStyleSheet("QTableWidget { background-color: #282a36; border: none; }")
+            self.stacked_widget.insertWidget(1, table)
+        else:
+            table = self.create_grid(recents)
+            self.stacked_widget.insertWidget(1, table)
+
+    def update_tab_headers(self):
+        for i, label in enumerate(self.tab_labels):
+            if i == self.current_tab_idx:
+                label.setStyleSheet("color: #ff79c6; border-bottom: 2px solid #ff79c6; font-size: 20pt; padding: 4px;")
+            else:
+                label.setStyleSheet("color: #6272a4; border-bottom: 2px solid transparent; font-size: 15pt; padding: 4px;")
+
+    def keyPressEvent(self, event: QKeyEvent):
+        key = event.key()
+        
+        # Vim Keys (hjkl)
+        if key == Qt.Key.Key_H:
+            self.move_selection(0, -1)
+        elif key == Qt.Key.Key_L:
+            self.move_selection(0, 1)
+        elif key == Qt.Key.Key_K:
+            self.move_selection(-1, 0)
+        elif key == Qt.Key.Key_J:
+            self.move_selection(1, 0)
+            
+        # Tabs movement (A/D keys)
+        elif key == Qt.Key.Key_A:
+            self.change_tab(-1)
+        elif key == Qt.Key.Key_D:
+            self.change_tab(1)
+            
+        # Favorite (Tab)
+        elif key == Qt.Key.Key_Tab:
+            self.toggle_favorite()
+            
+        # Type & Close (Space)
+        elif key == Qt.Key.Key_Space:
+            self.type_emoji(close_app=True)
+            
+        # Type & Keep Open (Enter)
+        elif key in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
+            self.type_emoji(close_app=False)
+            
+        # Escape to close
+        elif key == Qt.Key.Key_Escape:
+            self.close()
+        else:
+            super().keyPressEvent(event)
+
+    def select_cell(self, row, col):
+        table = self.stacked_widget.currentWidget()
+        if isinstance(table, QTableWidget) and table.rowCount() > 0:
+            # Bounds checking
+            r = max(0, min(row, table.rowCount() - 1))
+            c = max(0, min(col, table.columnCount() - 1))
+            
+            # Select item if valid
+            item = table.item(r, c)
+            if item and item.text():
+                table.setCurrentCell(r, c)
+
+    def move_selection(self, row_delta, col_delta):
+        table = self.stacked_widget.currentWidget()
+        if not isinstance(table, QTableWidget):
+            return
+            
+        curr_row = table.currentRow()
+        curr_col = table.currentColumn()
+        
+        if curr_row < 0 or curr_col < 0:
+            self.select_cell(0, 0)
+            return
+            
+        cols = table.columnCount()
+        rows = table.rowCount()
+        
+        new_row = curr_row + row_delta
+        new_col = curr_col + col_delta
+        
+        # Horizontal wrap-around
+        if col_delta != 0:
+            if new_col < 0:
+                if new_row > 0:
+                    new_row -= 1
+                    new_col = cols - 1
+                else:
+                    new_col = 0 # stay
+            elif new_col >= cols:
+                if new_row < rows - 1:
+                    new_row += 1
+                    new_col = 0
+                else:
+                    new_col = cols - 1 # stay
+                    
+        # Vertical bounds clamping
+        if new_row < 0:
+            new_row = 0
+        elif new_row >= rows:
+            new_row = rows - 1
+            
+        # Check if the target cell has a valid emoji
+        target_item = table.item(new_row, new_col)
+        if not target_item or not target_item.text():
+            # If moving down or right, jump to the absolute last emoji in grid
+            if row_delta > 0 or col_delta > 0:
+                for r in range(rows - 1, -1, -1):
+                    for c in range(cols - 1, -1, -1):
+                        item = table.item(r, c)
+                        if item and item.text():
+                            table.setCurrentCell(r, c)
+                            self.update_footer()
+                            return
+            # If moving up or left, do not move
+            return
+        else:
+            table.setCurrentCell(new_row, new_col)
+            self.update_footer()
+
+    def change_tab(self, delta):
+        total_tabs = len(self.tab_names)
+        self.current_tab_idx = (self.current_tab_idx + delta) % total_tabs
+        
+        # Select stack widget
+        self.stacked_widget.setCurrentIndex(self.current_tab_idx)
+        self.update_tab_headers()
+        
+        # Automatically select the first item on the newly entered tab
+        self.select_cell(0, 0)
+        self.update_footer()
+
+    def toggle_favorite(self):
+        table = self.stacked_widget.currentWidget()
+        if not isinstance(table, QTableWidget):
+            return
+        curr_row = table.currentRow()
+        curr_col = table.currentColumn()
+        if curr_row < 0 or curr_col < 0:
+            return
+        item = table.item(curr_row, curr_col)
+        if not item:
+            return
+            
+        emoji = item.text().strip()
+        # Prevent placeholder text from being favorited
+        if not emoji or len(emoji) > 4:
+            return
+            
+        favs = self.state["favorites"]
+        if emoji in favs:
+            favs.remove(emoji)
+        else:
+            favs.append(emoji)
+            
+        self.state["favorites"] = favs
+        save_state(self.state)
+        
+        # Dynamically rebuild favorites tab grid
+        self.rebuild_favorites_grid()
+        
+        # Maintain highlight if on Favorites tab
+        if self.current_tab_idx == 0:
+            self.select_cell(0, 0)
+            
+        self.update_footer()
+
+    def get_selected_emoji(self):
+        table = self.stacked_widget.currentWidget()
+        if not isinstance(table, QTableWidget):
+            return None
+        curr_row = table.currentRow()
+        curr_col = table.currentColumn()
+        if curr_row < 0 or curr_col < 0:
+            return None
+        item = table.item(curr_row, curr_col)
+        if not item:
+            return None
+        emoji = item.text().strip()
+        if not emoji or len(emoji) > 4:  # ignore placeholder text
+            return None
+        return emoji
+
+    def add_recent(self, emoji):
+        recents = self.state["recent"]
+        if emoji in recents:
+            recents.remove(emoji)
+        recents.insert(0, emoji)
+        self.state["recent"] = recents[:45]  # Limit history to 5 rows (45 emojis)
+        save_state(self.state)
+        self.rebuild_recent_grid()
+
+    def type_emoji(self, close_app=True):
+        emoji = self.get_selected_emoji()
+        if not emoji:
+            return
+            
+        self.add_recent(emoji)
+        
+        # Copy to Clipboard
+        QGuiApplication.clipboard().setText(emoji)
+        
+        # Autotype via wtype
+        if self.target_address:
+            # Focus back to previously active window
+            subprocess.run(['hyprctl', 'dispatch', 'focuswindow', f'address:{self.target_address}'])
+            
+            # Simulate typing
+            if shutil.which("wtype") is not None:
+                subprocess.run(['wtype', emoji])
+                
+            # If not closing, focus back to this emoji picker
+            if not close_app:
+                subprocess.run(['hyprctl', 'dispatch', 'focuswindow', 'class:walker-emoji'])
+        else:
+            # Fallback (e.g. no active window cached)
+            if shutil.which("wtype") is not None:
+                subprocess.run(['wtype', emoji])
+                
+        if close_app:
+            self.close()
+
+    def update_footer(self):
+        emoji = self.get_selected_emoji()
+        category = self.tab_names[self.current_tab_idx]
+        
+        wtype_installed = shutil.which("wtype") is not None
+        status_suffix = "" if wtype_installed else "  (⚠️ Install 'wtype' for auto-paste support)"
+        
+        hints = "Navigate: [hjkl] | Tabs: [a/d] | Fav: [Tab] | Paste: [Space] | Multi-Paste: [Enter]"
+        
+        if emoji:
+            self.footer_label.setText(f"Active: {emoji}  |  Category: {category}{status_suffix}\n{hints}")
+        else:
+            self.footer_label.setText(f"Category: {category}{status_suffix}\n{hints}")
+
+def main():
+    app = QApplication(sys.argv)
+    app.setApplicationName("walker-emoji")
+    app.setDesktopFileName("walker-emoji")
+    picker = EmojiPicker()
+    picker.show()
+    sys.exit(app.exec())
+
+if __name__ == "__main__":
+    main()

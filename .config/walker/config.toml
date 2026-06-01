@@ -1,9 +1,7 @@
 # Walker Configuration
 
-[general]
-terminal = "ghostty"
-mod_key = "super"
 theme = "dracula"
+terminal = "ghostty"
 
 [window]
 activate_item = "return"
@@ -58,3 +56,12 @@ prefix = ""
 switcher_prefix = "a"
 icon = "launch"
 priority = 1
+
+[providers.symbols]
+enabled = true
+name = "Symbols"
+prefix = "."
+switcher_prefix = ""
+icon = "face-smile"
+priority = 2
+
