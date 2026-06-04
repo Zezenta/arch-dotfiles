@@ -7,6 +7,7 @@ import json
 import math
 import subprocess
 import shutil
+import time
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
@@ -55,8 +56,14 @@ class EmojiPicker(QMainWindow):
         # Load user history and favorites
         self.state = load_state()
         
-        # Capture Hyprland active window before we gain focus
-        self.target_address = self.get_target_window_address()
+        # Capture Hyprland active window before we gain focus (from argument or detection)
+        self.target_address = None
+        for i, arg in enumerate(sys.argv):
+            if arg == "--target" and i + 1 < len(sys.argv):
+                self.target_address = sys.argv[i + 1]
+                break
+        if not self.target_address:
+            self.target_address = self.get_target_window_address()
         
         self.tab_icons = ["⭐", "🕒", "😀", "👋", "🌲", "🍔", "🚗", "⚽", "💡", "🔣", "🏁"]
         self.tab_names = ["Favorites", "Recent", "Smileys", "People", "Nature", "Food", "Travel", "Activities", "Objects", "Symbols", "Flags"]
@@ -482,16 +489,22 @@ class EmojiPicker(QMainWindow):
         self.add_recent(emoji)
         
         # Copy to Clipboard
-        QGuiApplication.clipboard().setText(emoji)
+        if shutil.which("wl-copy") is not None:
+            subprocess.run(['wl-copy', emoji])
+        else:
+            QGuiApplication.clipboard().setText(emoji)
         
         # Autotype via wtype
         if self.target_address:
             # Focus back to previously active window
             subprocess.run(['hyprctl', 'dispatch', 'focuswindow', f'address:{self.target_address}'])
             
-            # Simulate typing
+            # Give Hyprland a moment to register focus before typing
+            time.sleep(0.05)
+            
+            # Simulate typing (via Ctrl+V paste)
             if shutil.which("wtype") is not None:
-                subprocess.run(['wtype', emoji])
+                subprocess.run(['wtype', '-M', 'ctrl', '-k', 'v', '-m', 'ctrl'])
                 
             # If not closing, focus back to this emoji picker
             if not close_app:
@@ -499,10 +512,15 @@ class EmojiPicker(QMainWindow):
         else:
             # Fallback (e.g. no active window cached)
             if shutil.which("wtype") is not None:
-                subprocess.run(['wtype', emoji])
+                subprocess.run(['wtype', '-M', 'ctrl', '-k', 'v', '-m', 'ctrl'])
                 
         if close_app:
             self.close()
+
+    def closeEvent(self, event):
+        if self.target_address:
+            subprocess.run(['hyprctl', 'dispatch', 'focuswindow', f'address:{self.target_address}'])
+        super().closeEvent(event)
 
     def update_footer(self):
         emoji = self.get_selected_emoji()

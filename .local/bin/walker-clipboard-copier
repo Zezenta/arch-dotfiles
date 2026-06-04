@@ -1,0 +1,14 @@
+#!/bin/bash
+# 1. Copiar el contenido usando wl-copy con los mismos argumentos recibidos
+wl-copy "$@"
+
+# 2. Esperar a que walker comience a cerrarse
+sleep 0.1
+
+# 3. Comprobar si la ventana de walker se ha cerrado
+if ! hyprctl layers | grep -q 'namespace: walker'; then
+    # Esperar un instante adicional para que el foco vuelva a la aplicación activa
+    sleep 0.05
+    # Simular Ctrl+V para pegar
+    wtype -M ctrl -k v -m ctrl
+fi
