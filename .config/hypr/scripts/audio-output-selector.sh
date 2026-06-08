@@ -1,5 +1,27 @@
 #!/bin/bash
 
+# Auto-enable any cards that are set to "off" but have an "available: yes" profile
+# (excluding "pro-audio" which is typically not wanted for simple stereo switching).
+while read -r card profile; do
+    if [ -n "$card" ] && [ -n "$profile" ]; then
+        pactl set-card-profile "$card" "$profile"
+    fi
+done < <(pactl list cards | awk '
+    /^Card #/ { card_name="" }
+    /Name:/ { card_name=$2 }
+    /^[ \t]+[a-zA-Z0-9_:-]+:[ \t]+.*\(sinks: [1-9].*available: yes\)/ {
+        profile=$1; sub(/:$/, "", profile)
+        if (profile != "pro-audio" && card_name != "") {
+            available_profiles[card_name] = profile
+        }
+    }
+    /Active Profile: off/ {
+        if (card_name in available_profiles) {
+            print card_name, available_profiles[card_name]
+        }
+    }
+')
+
 # Get list of audio sinks (output devices)
 devices=$(pactl list short sinks)
 
